@@ -1,0 +1,170 @@
+from google.colab import drive
+drive.mount('/content/drive')
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+arquivo_df2021= pd.read_csv("drive/MyDrive/DadosCsv/microdados2021.csv", sep=";", encoding='iso-8859-1')
+arquivo_df2020= pd.read_csv("drive/MyDrive/DadosCsv/microdados2020.CSV", sep=";", encoding='iso-8859-1')
+arquivo_df2019= pd.read_csv("drive/MyDrive/DadosCsv/microdados2019.csv", sep=";", encoding='iso-8859-1')
+arquivo_df2018= pd.read_csv("drive/MyDrive/DadosCsv/microdados2018.csv", sep=";", encoding='iso-8859-1')
+arquivo_df2017= pd.read_csv("drive/MyDrive/DadosCsv/microdados2017.csv", sep=";", encoding='iso-8859-1')
+
+#limpeza
+arquivo_df2017["IN_INTERNET"] = arquivo_df2017["IN_INTERNET"].fillna(0)
+arquivo_df2018["IN_INTERNET"] = arquivo_df2018["IN_INTERNET"].fillna(0)
+arquivo_df2019["IN_INTERNET"] = arquivo_df2019["IN_INTERNET"].fillna(0)
+arquivo_df2020["IN_INTERNET"] = arquivo_df2020["IN_INTERNET"].fillna(0)
+arquivo_df2021["IN_INTERNET"] = arquivo_df2021["IN_INTERNET"].fillna(0)
+#Soma das quantiades - todas as escolas que possuem internet
+v17 = arquivo_df2017["IN_INTERNET"].sum()
+v18 = arquivo_df2018["IN_INTERNET"].sum()
+v19 = arquivo_df2019["IN_INTERNET"].sum()
+v20 = arquivo_df2020["IN_INTERNET"].sum()
+v21 = arquivo_df2021["IN_INTERNET"].sum()
+
+
+#taxa de crescimento
+
+xone = v17 - v18
+xtwo = v18 - v19
+xthree = v19 - v20
+xfour = v20 - v21
+
+taxadecres = (xone + xtwo + xthree + xfour) /5 *-1 #aqui descobri qual era a taxa de crescimento
+previ22 = v21 + taxadecres 
+print(f"\033[1mA média de instalações de internet é de {taxadecres:.0f} por ano\033[m", "\n")
+
+#Variaveis das quantidades reais
+
+x = np.array([2017, 2018, 2019, 2020, 2021])
+y = np.array([v17, v18, v19, v20, v21])
+
+
+#Previsões sem regressão linear
+
+previ22 = v21 + taxadecres
+previ23 = previ22 +taxadecres
+previ24 = previ23 + taxadecres
+previ25 = previ24 + taxadecres
+previ26 = previ25 + taxadecres
+previ27 = previ26 + taxadecres
+previ28 = previ27 + taxadecres
+previ29 = previ28 + taxadecres
+previ30 = previ29 + taxadecres
+previ31 = previ30 + taxadecres
+previ32 = previ31 + taxadecres
+previ33 = previ32 + taxadecres
+
+
+
+#Linha de previsão
+x2 = np.array([2017, 2018, 2019, 2020, 2021,  2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033])
+y2 = np.array([v17, v18, v19, v20, v21, previ22,
+               previ23, previ24, previ25, previ26, previ27, previ28,
+               previ29, previ30, previ31, previ32, previ33])
+#Figura 1
+plt.figure(figsize = (20 ,5)) #dimensoes da figura
+plt.subplot(1, 2, 1)
+plt.plot(x, y, c='darkblue')
+
+plt.scatter(x, y, c='darkblue')  #pontos de crescimento
+plt.title('Crescimento de instalações de internet') 
+plt.xlabel('Ano') 
+plt.ylabel('Quantidade') 
+
+
+#Figura 2
+
+plt.subplot(1, 2, 2)
+plt.plot(x2, y2, c='darkorange')
+plt.plot(x2, y2,c='#ffffff',  label= f'Total escolas = 221.140\nTotal internet em 2021 = {v21:.0f}')
+plt.plot(x2, y2,c='darkorange')
+
+plt.scatter(x2, y2, c='darkorange') 
+
+
+plt.title('Instalação de internet - Previsão') 
+plt.xlabel('Ano') 
+plt.ylabel('Quantidade') 
+plt.legend()
+plt.show()
+
+#Previsão para 100% de instalação de internet nas escolas
+#print(arquivo_df2021.shape)
+quantidadedeescolas = float(221140)
+varone = (quantidadedeescolas - v21)/taxadecres
+print("\n", f"Em {varone:.0f} anos poderemos ter 100% de instalação de internet nas 221.140 mil escolas")
+def plotarRegiao(titulo, codigo):
+  regiao17= arquivo_df2017.loc[arquivo_df2017["CO_REGIAO"]== codigo ]
+  re1 = regiao17["CO_REGIAO"].sum()
+  
+  regiao18= arquivo_df2018.loc[arquivo_df2018["CO_REGIAO"]== codigo]
+  re2 = regiao18["CO_REGIAO"].sum()
+
+  regiao19= arquivo_df2019.loc[arquivo_df2019["CO_REGIAO"]== codigo]
+  re3 = regiao19["CO_REGIAO"].sum()
+
+  regiao20 = arquivo_df2020.loc[arquivo_df2020["CO_REGIAO"]== codigo]
+  re4 =regiao20["CO_REGIAO"].sum()
+
+  regiao21 = arquivo_df2021.loc[arquivo_df2021["CO_REGIAO"]== codigo]
+  re5 = regiao21["CO_REGIAO"].sum()
+
+
+  #Limpeza região
+  df_A = arquivo_df2017.loc[(arquivo_df2017["CO_REGIAO"]== codigo) & (arquivo_df2017["IN_INTERNET"]== 1), ["CO_REGIAO","IN_INTERNET"]]
+  qt_A = df_A["IN_INTERNET"].sum()
+  
+  df_B = arquivo_df2018.loc[(arquivo_df2018["CO_REGIAO"]== codigo) & (arquivo_df2018["IN_INTERNET"]== 1), ["CO_REGIAO","IN_INTERNET"]]
+  qt_B = df_B["IN_INTERNET"].sum()
+  
+  df_C = arquivo_df2019.loc[(arquivo_df2019["CO_REGIAO"]== codigo) & (arquivo_df2019["IN_INTERNET"]== 1), ["CO_REGIAO","IN_INTERNET"]]
+  qt_C = df_C["IN_INTERNET"].sum()
+  
+  df_D = arquivo_df2020.loc[(arquivo_df2020["CO_REGIAO"]== codigo) & (arquivo_df2020["IN_INTERNET"]== 1), ["CO_REGIAO","IN_INTERNET"]]
+  qt_D = df_D["IN_INTERNET"].sum()
+  
+  df_E = arquivo_df2021.loc[(arquivo_df2021["CO_REGIAO"]== codigo) & (arquivo_df2021["IN_INTERNET"]== 1), ["CO_REGIAO","IN_INTERNET"]]
+  qt_E = df_E["IN_INTERNET"].sum()
+
+  #Prints 
+  numero = re5/codigo
+
+  print(f"Escolas da região em 2021 {numero:.0f}")
+  print(f"\033[1mRegião {titulo} internet instalada {qt_E} \033[m\n")
+
+  #1graficos:
+  plt.figure(figsize = (20 ,5)) #dimensoes da figura
+  x = np.array(["2017", "2018", "2019", "2020", "2021"])
+  y = np.array([qt_A, qt_B, qt_C, qt_D, qt_E])
+
+  plt.subplot(1, 2, 1)
+  plt.plot(x,y, c='darkblue', linestyle = 'dotted')
+  plt.scatter(x, y, c='darkblue') 
+  plt.title("Crescimento ao longo dos anos")
+
+  #2grafico:
+  x = np.array(["Internet", "Escolas"])
+  y = np.array([qt_E, numero])
+
+  plt.subplot(1, 2, 2)
+  plt.grid(axis = 'y')
+  plt.bar(x, y, color = "#9999ff", width = 0.5)
+  plt.bar(x, y, color = "#9999ff", label= f"Internet {qt_E:.0f}")
+  plt.bar(x, y, color = "#9999ff", label= f'Escolas {numero:.0f}')
+  plt.title("Internet x Escolas")
+  plt.legend()
+  
+  plt.suptitle("Instalação {}".format(titulo))
+  plt.show()
+  
+  plotarRegiao("Norte", 1)
+  
+  plotarRegiao("Nordeste", 2)
+  
+  plotarRegiao("Sudeste", 3)
+  plotarRegiao("Sul", 4)
+  
+  plotarRegiao("Centro", 5)
